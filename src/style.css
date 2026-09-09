@@ -10,6 +10,14 @@
   --border-color: #e5e7eb;
   --card-bg: #ffffff;
   --accent-color: #2563eb;
+  --card-shadow: 0 8px 20px -12px rgba(15, 23, 42, 0.18);
+
+  --status-active-text: #0f7b3b;
+  --status-active-bg: rgba(15, 123, 59, 0.12);
+  --status-planned-text: #8a6d00;
+  --status-planned-bg: rgba(180, 140, 0, 0.14);
+  --status-maintenance-text: #b3401f;
+  --status-maintenance-bg: rgba(179, 64, 31, 0.14);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,6 +33,14 @@
     --border-color: #2a2a2a;
     --card-bg: #1a1a1a;
     --accent-color: #60a5fa;
+    --card-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.55);
+
+    --status-active-text: #4ade80;
+    --status-active-bg: rgba(74, 222, 128, 0.14);
+    --status-planned-text: #fbbf24;
+    --status-planned-bg: rgba(251, 191, 36, 0.14);
+    --status-maintenance-text: #fb923c;
+    --status-maintenance-bg: rgba(251, 146, 60, 0.14);
   }
 }
 

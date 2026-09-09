@@ -19,8 +19,7 @@
 ## Open decisions
 
 - The optional `external` field on the service metadata shape has no defined behavior yet — it exists in the type but nothing branches on it. Decide whether to give it real meaning (e.g. same-tab vs new-tab navigation) or drop it before it looks load-bearing.
-- Service categorization/grouping is deferred until the service count justifies it (see `docs/product/goals.md`); no threshold has been set for when that becomes necessary.
-- Whether the `cleanbrain.me` root domain can already be routed to this service under the existing `cleanbrain-me-infra` Gateway/HTTPRoute setup, or needs new Gateway-level configuration, has not been verified — this blocks deployment but not MVP implementation.
+- No listed service is `planned` right now (the `developer` placeholder was removed from `src/config/services.ts` until that project actually exists) — decide whether a `planned` entry should ever be shown pre-launch, or only added once a service is real.
 
 ## Scope rule
 

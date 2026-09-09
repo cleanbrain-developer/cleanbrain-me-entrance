@@ -22,10 +22,11 @@ Every answer must be traceable to a repository path (this document, `docs/archit
 
 ## Long-term direction
 
-Possible future extensions, in rough order of likelihood, once the static MVP is deployed and stable:
+Possible future extensions, once the static MVP is deployed and stable:
 
-1. Service categorization / grouping in the UI, if the service count grows enough to need it.
-2. Live status (health-check-driven) instead of a manually maintained `status` field.
-3. Anything beyond static navigation — proxying, auth, or a backend — is out of scope indefinitely unless a concrete requirement forces a documented architecture decision (see `docs/architecture/overview.md` and `docs/decisions/`).
+1. Live status (health-check-driven) instead of a manually maintained `status` field.
+2. Anything beyond static navigation — proxying, auth, or a backend — is out of scope indefinitely unless a concrete requirement forces a documented architecture decision (see `docs/architecture/overview.md` and `docs/decisions/`).
 
 This sequence is a direction, not a commitment.
+
+Service categorization is no longer speculative: `Service.category` is grouped in the UI (`ServiceGrid.vue`) whenever more than one category is present. Group headings stay hidden while everything shares one category, so the UI doesn't show structure the data doesn't yet justify.

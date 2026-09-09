@@ -26,6 +26,9 @@ Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a nor
 - Created the third-application CI ServiceAccount token (`ci-deployer-cleanbrain-me-entrance-token`) and merged its context into `/home/deploy/.kube/config` alongside `english-core-speaking`'s, without disturbing the existing `current-context`. Verified: `kubectl auth whoami` → `system:serviceaccount:cleanbrain-me-entrance:ci-deployer`; `can-i patch deployment/web` → `yes`; `can-i get secrets` → `no`.
 - Set `ENABLE_PRODUCTION_DEPLOY=true` and triggered a real workflow run (`34362967974`): `test` → `build-and-push` → `deploy` all succeeded, meaning CI's SSH → `kubectl set image` → `rollout status` path is confirmed working end to end, not just theoretically wired up.
 - **Verified end to end, twice**: `curl -I https://cleanbrain.me` returns `HTTP/2 200` both before and after the CI-driven deploy. The service directory is live in production with a working CI/CD pipeline.
+- Removed the `developer` placeholder from `src/config/services.ts` — that project hasn't started, and a `planned` entry for a nonexistent service was misleading on a live production page. Only `english-core-speaking` is listed now.
+- Added `category` to the `Service` shape's data and grouping behavior in the UI: `ServiceGrid.vue` now sections services by `category` (first-seen order), with a heading only when more than one category is present — so today, with a single service in one category, the page still renders as a plain grid. `english-core-speaking` is tagged `"Learning"`.
+- UI/UX polish: hover elevation (shadow, not just a border color change) on cards, `:focus-visible` outline for keyboard navigation, and dark-mode-aware CSS variables for status badge colors (previously hardcoded light-mode hex values with weak dark-mode contrast).
 
 ## In progress
 
@@ -33,13 +36,13 @@ Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a nor
 
 ## Next
 
-1. Add a real `developer.cleanbrain.me` service entry once that project exists (currently a `planned` placeholder in `src/config/services.ts`).
+1. Add a real `developer.cleanbrain.me` service entry once that project actually exists and is ready to launch — not before, per the decision above.
 2. Ordinary feature/content work from here — no remaining foundation or deployment-pipeline gaps.
 
 ## Open decisions
 
 - The `external` field on `Service` has no defined behavior yet (see `docs/product/scope.md`).
-- No threshold has been set for when service categorization becomes necessary (see `docs/product/goals.md`).
+- Whether a `planned` (pre-launch) entry should ever be shown, or a service should only appear once it's real (see `docs/product/scope.md`).
 - `kioti-crm-discount`'s TLS/HTTPS listener was found to be missing from the live Gateway during this work (unrelated to entrance, noted in `cleanbrain-me-infra`'s README) — not this repository's concern, but flagged for awareness.
 
 ## Known constraints

@@ -22,7 +22,7 @@ src/components/ServiceCard.vue  ──(plain <a href>)──>  external subdomai
 
 ### Presentation
 
-`ServiceGrid.vue` lays out cards responsively; `ServiceCard.vue` renders one service's name, description, status badge, and — only when `status === "active"` — a real `<a>` link that opens the target in a new tab. Non-active services render as non-interactive.
+`ServiceGrid.vue` groups services by `category` (a section per distinct category, in first-seen order) and lays out each group's cards responsively; group headings only render once there's more than one category, so a single-category catalog stays as plain a grid as before. `ServiceCard.vue` renders one service's name, description, status badge, and — only when `status === "active"` — a real `<a>` link that opens the target in a new tab. Non-active services render as non-interactive.
 
 ### Entry
 
@@ -42,7 +42,3 @@ The build output is a static bundle meant to be served by a lightweight containe
 - Config-driven service metadata: never hardcode a service into a component.
 - No proxying: navigation is always a real browser navigation to the service's own origin, never a request Entrance forwards or fetches on the user's behalf.
 - Target cluster is 2 vCPU / 4 GB RAM / 40 GB disk — keep the runtime footprint of the served bundle and its container minimal.
-
-## Open decisions
-
-- Whether the `cleanbrain.me` root domain can be routed under the current shared Gateway without new cluster-level configuration has not been verified against the `cleanbrain-me-infra` repository's actual state (see `docs/product/scope.md`).

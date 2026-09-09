@@ -39,12 +39,18 @@ const isNavigable = props.service.status === "active";
   background: var(--card-bg);
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .card:not(.disabled):hover {
   border-color: var(--accent-color);
+  box-shadow: var(--card-shadow);
   transform: translateY(-2px);
+}
+
+.card:not(.disabled):focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 .card.disabled {
@@ -94,17 +100,17 @@ const isNavigable = props.service.status === "active";
 }
 
 .status-badge.status-active {
-  color: #0f7b3b;
-  background: rgba(15, 123, 59, 0.12);
+  color: var(--status-active-text);
+  background: var(--status-active-bg);
 }
 
 .status-badge.status-planned {
-  color: #8a6d00;
-  background: rgba(180, 140, 0, 0.14);
+  color: var(--status-planned-text);
+  background: var(--status-planned-bg);
 }
 
 .status-badge.status-maintenance {
-  color: #b3401f;
-  background: rgba(179, 64, 31, 0.14);
+  color: var(--status-maintenance-text);
+  background: var(--status-maintenance-bg);
 }
 </style>
