@@ -32,6 +32,10 @@ npm run build
 
 Service metadata is managed in [`src/config/services.ts`](src/config/services.ts), separate from UI components — see `docs/architecture/overview.md`.
 
+## Container / CI
+
+`Dockerfile` builds the static bundle and serves it with nginx (`nginx.conf`). `.github/workflows/deploy.yml` builds and pushes the image to GHCR on every push to `main`, then deploys over SSH once `cleanbrain-me-infra`'s manifests exist and the `ENABLE_PRODUCTION_DEPLOY` repository variable is set — see `docs/status/current-state.md` for the exact rollout sequence.
+
 ## Status
 
-MVP implemented and verified (typecheck, build). Deployment integration with `cleanbrain-me-infra` has not started — see `docs/status/current-state.md` for what's next.
+MVP, Dockerfile, and CI workflow implemented. Kubernetes deployment integration with `cleanbrain-me-infra` has not started — see `docs/status/current-state.md` for what's next.

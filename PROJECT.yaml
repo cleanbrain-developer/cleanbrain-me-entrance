@@ -53,4 +53,4 @@ context:
 delivery:
   implementation_present: true
   cli_present: false
-  automation_present: false
+  automation_present: true
