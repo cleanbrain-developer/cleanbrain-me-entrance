@@ -22,7 +22,7 @@ src/components/ServiceCard.vue  ──(plain <a href>)──>  external subdomai
 
 ### Presentation
 
-`ServiceGrid.vue` groups services by `category` (a section per distinct category, in first-seen order) and lays out each group's cards responsively; group headings only render once there's more than one category, so a single-category catalog stays as plain a grid as before. `ServiceCard.vue` renders one service's name, description, status badge, and — only when `status === "active"` — a real `<a>` link that opens the target in a new tab. Non-active services render as non-interactive.
+`ServiceGrid.vue` groups services by `category` (a section with a heading per distinct category, in first-seen order) and lays out each group's cards responsively — always sectioned, even with a single category, so the structure doesn't change shape as services are added later. `ServiceCard.vue` renders one service's name, description, status badge, and — only when `status === "active"` — a real `<a>` link that opens the target in a new tab. Non-active services render as non-interactive.
 
 ### Entry
 

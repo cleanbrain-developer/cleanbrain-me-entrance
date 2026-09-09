@@ -29,4 +29,4 @@ Possible future extensions, once the static MVP is deployed and stable:
 
 This sequence is a direction, not a commitment.
 
-Service categorization is no longer speculative: `Service.category` is grouped in the UI (`ServiceGrid.vue`) whenever more than one category is present. Group headings stay hidden while everything shares one category, so the UI doesn't show structure the data doesn't yet justify.
+Service categorization is no longer speculative: `Service.category` is always grouped into a labeled section in the UI (`ServiceGrid.vue`), including today's single category, so the structure is visible from the start instead of appearing only once more categories exist.

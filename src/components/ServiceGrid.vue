@@ -22,16 +22,12 @@ const groups = computed(() => {
 
   return order.map((category) => ({ category, services: byCategory.get(category)! }));
 });
-
-// A single category adds a heading with nothing to distinguish it from —
-// skip it until there's more than one group to actually separate.
-const showHeadings = computed(() => groups.value.length > 1);
 </script>
 
 <template>
   <div class="groups">
     <section v-for="group in groups" :key="group.category" class="group">
-      <h2 v-if="showHeadings" class="group-title">{{ group.category }}</h2>
+      <h2 class="group-title">{{ group.category }}</h2>
       <div class="grid">
         <ServiceCard v-for="service in group.services" :key="service.id" :service="service" />
       </div>
