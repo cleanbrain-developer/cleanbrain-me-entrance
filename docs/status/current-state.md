@@ -4,7 +4,7 @@ Last updated: 2026-09-09
 
 ## Current phase
 
-MVP Implemented, Deployment Pending — the standalone frontend, Dockerfile, and CI workflow are in place and pushed to GitHub. Kubernetes deployment integration with `cleanbrain-me-infra` has not started.
+Deployed — `https://cleanbrain.me` is live in production, serving the MVP. CI auto-deploy (`ENABLE_PRODUCTION_DEPLOY`) is not yet enabled; the current production Pod was rolled out manually during first-time deployment.
 
 ## Completed
 
@@ -13,13 +13,17 @@ MVP Implemented, Deployment Pending — the standalone frontend, Dockerfile, and
 - Recorded ADR-0001 (repository-first context) as accepted, with `cleanbrain.developer` as decider.
 - Reviewed and confirmed `.ai/constitution/` with the maintainer.
 - Implemented the Entrance MVP: `Service` type (`src/types/service.ts`), the initial service list (`src/config/services.ts`) with `english-core-speaking` (active) and `developer` (planned), `ServiceCard.vue`/`ServiceGrid.vue`, and the `App.vue` shell with light/dark styling via `prefers-color-scheme`.
-- Verified `vue-tsc -b` (typecheck) and `npm run build` both pass; smoke-tested `npm run dev` by curling the served HTML (no browser/screenshot tool was available in this environment to visually confirm rendering).
+- Verified `vue-tsc -b` (typecheck) and `npm run build` both pass.
 - Ran the bootstrap acceptance test in a fresh, isolated agent session starting only from `CLAUDE.md` — all five acceptance questions in `docs/product/goals.md` were answered correctly with repository-path citations and no gaps or guesses.
-- Initialized git locally, committed the foundation + MVP, created the public GitHub repository `cleanbrain-developer/cleanbrain-me-entrance`, and pushed to `main` — each step confirmed separately by the maintainer beforehand.
-- Added `Dockerfile` (Node build stage → `nginx:1.27-alpine` runtime, matching `english-core-speaking/apps/web`'s pattern) and `nginx.conf` (SPA fallback + asset caching), plus `.dockerignore`.
-- Added `npm run typecheck` (`vue-tsc -b --noEmit`) as a standalone script, separate from `build`.
-- Added `.github/workflows/deploy.yml` following the `english-core-speaking` / `kioti-crm-discount-enhance-demo` CI/CD model: test (typecheck + build) → build/push single `web` image to GHCR (SHA + `latest` tags) → SSH to Hetzner → `kubectl set image deployment/web` → `rollout status`, gated by the `ENABLE_PRODUCTION_DEPLOY` repository variable and serialized with a `concurrency` group.
-- Pushed to `main` and confirmed the workflow actually runs: `test` and `build-and-push` both succeeded on GitHub Actions (run `34352633577`), so `Dockerfile` is now verified as buildable — via CI, not the local Docker daemon (which wasn't running in this environment). `deploy` correctly skipped, since `ENABLE_PRODUCTION_DEPLOY` isn't set yet.
+- Initialized git locally, committed the foundation + MVP, created the public GitHub repository `cleanbrain-developer/cleanbrain-me-entrance`, and pushed to `main`.
+- Added `Dockerfile`, `nginx.conf`, `.dockerignore`, and `.github/workflows/deploy.yml` (test → build/push GHCR → SSH deploy, gated by `ENABLE_PRODUCTION_DEPLOY`), matching the `english-core-speaking` / `kioti-crm-discount-enhance-demo` CI/CD model. Verified buildable via a real GitHub Actions run.
+- Confirmed the GHCR package (`ghcr.io/cleanbrain-developer/cleanbrain-me-entrance`) is public — no `imagePullSecrets` needed.
+- Set `HETZNER_SSH_HOST`/`USER`/`PORT`/`PRIVATE_KEY`/`KNOWN_HOSTS` GitHub Actions secrets on this repo, reusing `english-core-speaking`'s existing CI SSH keypair (same server, same `deploy` Linux account).
+- `cleanbrain-me-infra`: added `kubernetes/namespaces/cleanbrain-me-entrance.yaml` and `kubernetes/apps/entrance/{rbac,deployment,service,httproute}.yaml`.
+- Confirmed the apex `cleanbrain.me` A record already existed (DNS was not a blocker).
+- Discovered the live Gateway's TLS mechanism is cert-manager's Gateway API integration ("Gateway Shim": a `Certificate` is auto-issued per HTTPS listener, owned by the Gateway) rather than a manually-applied `Certificate` object. Added a new `entrance-https` listener (hostname `cleanbrain.me`, `certificateRefs: [cleanbrain-me-entrance-tls]`) to the live `cleanbrain-me-gateway` Gateway; cert-manager auto-issued and the certificate is `Ready`.
+- Applied `namespace` → `rbac` → `deployment` → `service` → `httproute` to the live cluster as cluster administrator. `pod/web` is `Running 1/1`, `httproute/entrance` shows `Accepted: True` / `ResolvedRefs: True`.
+- **Verified end to end**: `curl -I https://cleanbrain.me` returns `HTTP/2 200` (nginx/1.27.5). The service directory is live in production.
 
 ## In progress
 
@@ -27,30 +31,28 @@ MVP Implemented, Deployment Pending — the standalone frontend, Dockerfile, and
 
 ## Next
 
-1. Confirm whether the pushed `ghcr.io/cleanbrain-developer/cleanbrain-me-entrance` package is public or private (checking this needed a broader `gh` token scope than was available in this environment) — determines whether the eventual Deployment needs `imagePullSecrets` (see "Open decisions").
-2. Configure this new GitHub repository's Actions secrets/variables (`HETZNER_SSH_HOST`, `HETZNER_SSH_USER`, `HETZNER_SSH_PRIVATE_KEY`, `HETZNER_SSH_PORT`, `HETZNER_SSH_KNOWN_HOSTS`; `ENABLE_PRODUCTION_DEPLOY` left unset until bootstrap) — same values as `english-core-speaking`'s per `cleanbrain-me-infra`'s README, since it's the same server.
-3. Coordinate with `cleanbrain-me-infra` to add this service's manifests: namespace `cleanbrain-me-entrance`, `rbac.yaml` (scoped `ci-deployer` ServiceAccount/Role/RoleBinding limited to `get`/`patch` on `deployment/web` and `list`/`watch` on Deployments in-namespace, mirroring `english-core-speaking`'s), `deployment.yaml`/`service.yaml` for `web`, and `httproute.yaml`.
-4. Resolve whether the `cleanbrain.me` root domain (not a subdomain) routes to this service under the existing shared Gateway/HTTPRoute setup, or needs new Gateway-level configuration — this blocks deployment specifically, not the CI pipeline itself.
-5. Follow `cleanbrain-me-infra`'s "First-time deployment" pattern: bootstrap the namespace/RBAC/Deployment/Service/HTTPRoute manually as cluster admin first, confirm the `:latest` image exists in GHCR, then flip `ENABLE_PRODUCTION_DEPLOY` to `"true"` for this repo.
-6. Once deployed, verify per `cleanbrain-me-infra`'s "Deployment verification" pattern (pods/svc, HTTPRoute `Accepted`/`ResolvedRefs`, external `curl`, browser check).
+1. Set up the CI ServiceAccount token and merge this app's context into `/home/deploy/.kube/config` on the deploy host (third application sharing that file — see `cleanbrain-me-infra` README "Multi-application kubeconfig on the deploy host").
+2. Verify the scoped `ci-deployer` identity's `kubectl auth can-i` checks (allowed: `get`/`patch` on `deployment/web`; denied: `secrets`, cross-namespace) before enabling CI deploys.
+3. Set `ENABLE_PRODUCTION_DEPLOY=true` as a repository variable, then push (or re-run) to confirm a real CI-driven deploy (`kubectl set image` + `rollout status`) succeeds end to end.
+4. Add real `developer.cleanbrain.me` service entry once that project exists (currently `planned` placeholder in `src/config/services.ts`).
 
 ## Open decisions
 
 - The `external` field on `Service` has no defined behavior yet (see `docs/product/scope.md`).
-- Whether the `cleanbrain.me` root domain can be routed under the existing shared Gateway without new `cleanbrain-me-infra` configuration has not been verified (see `docs/architecture/overview.md`).
 - No threshold has been set for when service categorization becomes necessary (see `docs/product/goals.md`).
-- Whether the GHCR package `ghcr.io/cleanbrain-developer/cleanbrain-me-entrance` should be public (like `english-core-speaking`'s, avoiding `imagePullSecrets`) or private has not been explicitly decided — the repository is public, so public is assumed by default but not yet confirmed against actual GHCR package visibility settings.
+- `kioti-crm-discount`'s TLS/HTTPS listener was found to be missing from the live Gateway during this work (unrelated to entrance, noted in `cleanbrain-me-infra`'s README) — not this repository's concern, but flagged for awareness.
 
 ## Known constraints
 
 - No backend, database, or authentication by design (see `docs/product/scope.md`).
-- Target cluster is 2 vCPU / 4 GB RAM / 40 GB disk (per `cleanbrain-me-infra`) — deployment must stay a lightweight static bundle in a small container. Adding this service's resource requests/limits to `cleanbrain-me-infra`'s resource budget table is part of the manifest work in Next.
+- Target cluster is 2 vCPU / 4 GB RAM / 40 GB disk (per `cleanbrain-me-infra`) — the combined CPU limit across all services now exceeds the box's vCPU count (ceiling, not reservation — see that repo's "Resource budget"), so stay lightweight.
 - This repository owns application source, Dockerfile, and CI; `cleanbrain-me-infra` owns the production Kubernetes manifest — the two must not duplicate each other's content.
-- The CI deployment identity must follow the same least-privilege model as `english-core-speaking`'s `ci-deployer` (namespace-scoped Role, no `ClusterRole`, no `Secrets`/`Pods`/`create`/`delete` access) — per `cleanbrain-me-infra`'s CLAUDE.md, this must be a new, separate RBAC identity, not a widened `english-core-speaking` one.
+- The CI deployment identity (`ci-deployer` in `cleanbrain-me-entrance` namespace) follows the same least-privilege model as `english-core-speaking`'s — a separate RBAC identity, not a widened shared one.
 
 ## Exit criteria for this phase
 
-- A fresh agent session, given only `AGENTS.md` or `CLAUDE.md`, correctly answers the five acceptance questions in `docs/product/goals.md`, each traceable to a repository path. (Met — see Completed.)
+- A fresh agent session, given only `AGENTS.md` or `CLAUDE.md`, correctly answers the five acceptance questions in `docs/product/goals.md`, each traceable to a repository path. (Met.)
 - The foundation and MVP are committed as a reviewable baseline. (Met.)
 - Dockerfile and CI workflow exist in this repository and have been verified to build successfully via GitHub Actions. (Met.)
-- The corresponding `cleanbrain-me-infra` manifest exists and the service is reachable at `https://cleanbrain.me`. (Not yet met.)
+- The corresponding `cleanbrain-me-infra` manifest exists and the service is reachable at `https://cleanbrain.me`. (Met.)
+- CI-driven deploys (`ENABLE_PRODUCTION_DEPLOY=true`) are verified working end to end. (Not yet met — see Next.)

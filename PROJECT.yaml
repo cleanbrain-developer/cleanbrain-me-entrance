@@ -5,7 +5,7 @@ project:
   repository: cleanbrain-me-entrance
   abbreviation: entrance
   type: web-application
-  lifecycle: early-development
+  lifecycle: active
 
 purpose:
   summary: >-
@@ -32,12 +32,12 @@ principles:
   - deterministic-quality-gates-when-implemented
 
 current_phase:
-  id: mvp-implemented
+  id: deployed
   status: active
   goal: >-
-    Finish verifying the standalone frontend MVP, then integrate deployment
-    with the cleanbrain-me-infra repository (Dockerfile, CI workflow,
-    Kubernetes manifest, Gateway/DNS wiring).
+    https://cleanbrain.me is live in production. Remaining work is enabling
+    CI-driven deploys (ENABLE_PRODUCTION_DEPLOY) so future pushes to main
+    roll out automatically instead of requiring a manual kubectl step.
 
 context:
   human_entrypoint: README.md
