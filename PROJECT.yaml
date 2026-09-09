@@ -1,0 +1,56 @@
+schema_version: 1
+
+project:
+  name: cleanbrain.me Entrance
+  repository: cleanbrain-me-entrance
+  abbreviation: entrance
+  type: web-application
+  lifecycle: early-development
+
+purpose:
+  summary: >-
+    Service directory and launcher for the cleanbrain.me domain: a single
+    page that lists the services running under cleanbrain.me and links out
+    to each of them.
+  problem: >-
+    cleanbrain.me has no landing page at its root domain. A visitor has no
+    way to discover which personal services exist under the domain, what
+    each one does, or how to reach it.
+
+supported_agents:
+  initial:
+    - codex
+    - claude-code
+  policy: agent-agnostic-core
+
+principles:
+  - repository-first-context
+  - agent-agnostic-core
+  - minimal-task-prompts
+  - evidence-before-change
+  - explicit-architecture-decisions
+  - deterministic-quality-gates-when-implemented
+
+current_phase:
+  id: mvp-implemented
+  status: active
+  goal: >-
+    Finish verifying the standalone frontend MVP, then integrate deployment
+    with the cleanbrain-me-infra repository (Dockerfile, CI workflow,
+    Kubernetes manifest, Gateway/DNS wiring).
+
+context:
+  human_entrypoint: README.md
+  agent_entrypoints:
+    codex: AGENTS.md
+    claude_code: CLAUDE.md
+  constitution: .ai/constitution/
+  product: docs/product/
+  architecture: docs/architecture/
+  decisions: docs/decisions/
+  current_state: docs/status/current-state.md
+
+delivery:
+  implementation_present: true
+  cli_present: false
+  automation_present: false
