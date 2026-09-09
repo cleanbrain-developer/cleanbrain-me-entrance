@@ -19,6 +19,7 @@ MVP Implemented, Deployment Pending — the standalone frontend, Dockerfile, and
 - Added `Dockerfile` (Node build stage → `nginx:1.27-alpine` runtime, matching `english-core-speaking/apps/web`'s pattern) and `nginx.conf` (SPA fallback + asset caching), plus `.dockerignore`.
 - Added `npm run typecheck` (`vue-tsc -b --noEmit`) as a standalone script, separate from `build`.
 - Added `.github/workflows/deploy.yml` following the `english-core-speaking` / `kioti-crm-discount-enhance-demo` CI/CD model: test (typecheck + build) → build/push single `web` image to GHCR (SHA + `latest` tags) → SSH to Hetzner → `kubectl set image deployment/web` → `rollout status`, gated by the `ENABLE_PRODUCTION_DEPLOY` repository variable and serialized with a `concurrency` group.
+- Pushed to `main` and confirmed the workflow actually runs: `test` and `build-and-push` both succeeded on GitHub Actions (run `34352633577`), so `Dockerfile` is now verified as buildable — via CI, not the local Docker daemon (which wasn't running in this environment). `deploy` correctly skipped, since `ENABLE_PRODUCTION_DEPLOY` isn't set yet.
 
 ## In progress
 
@@ -26,7 +27,7 @@ MVP Implemented, Deployment Pending — the standalone frontend, Dockerfile, and
 
 ## Next
 
-1. Local Docker daemon was not running in this environment, so the `Dockerfile` build was **not** verified locally — only reviewed against `english-core-speaking`'s working equivalent. Verify it builds (`docker build .`) before relying on it, or let the first CI run be the verification.
+1. Confirm whether the pushed `ghcr.io/cleanbrain-developer/cleanbrain-me-entrance` package is public or private (checking this needed a broader `gh` token scope than was available in this environment) — determines whether the eventual Deployment needs `imagePullSecrets` (see "Open decisions").
 2. Configure this new GitHub repository's Actions secrets/variables (`HETZNER_SSH_HOST`, `HETZNER_SSH_USER`, `HETZNER_SSH_PRIVATE_KEY`, `HETZNER_SSH_PORT`, `HETZNER_SSH_KNOWN_HOSTS`; `ENABLE_PRODUCTION_DEPLOY` left unset until bootstrap) — same values as `english-core-speaking`'s per `cleanbrain-me-infra`'s README, since it's the same server.
 3. Coordinate with `cleanbrain-me-infra` to add this service's manifests: namespace `cleanbrain-me-entrance`, `rbac.yaml` (scoped `ci-deployer` ServiceAccount/Role/RoleBinding limited to `get`/`patch` on `deployment/web` and `list`/`watch` on Deployments in-namespace, mirroring `english-core-speaking`'s), `deployment.yaml`/`service.yaml` for `web`, and `httproute.yaml`.
 4. Resolve whether the `cleanbrain.me` root domain (not a subdomain) routes to this service under the existing shared Gateway/HTTPRoute setup, or needs new Gateway-level configuration — this blocks deployment specifically, not the CI pipeline itself.
@@ -51,5 +52,5 @@ MVP Implemented, Deployment Pending — the standalone frontend, Dockerfile, and
 
 - A fresh agent session, given only `AGENTS.md` or `CLAUDE.md`, correctly answers the five acceptance questions in `docs/product/goals.md`, each traceable to a repository path. (Met — see Completed.)
 - The foundation and MVP are committed as a reviewable baseline. (Met.)
-- Dockerfile and CI workflow exist in this repository. (Met, pending local Docker verification.)
+- Dockerfile and CI workflow exist in this repository and have been verified to build successfully via GitHub Actions. (Met.)
 - The corresponding `cleanbrain-me-infra` manifest exists and the service is reachable at `https://cleanbrain.me`. (Not yet met.)
