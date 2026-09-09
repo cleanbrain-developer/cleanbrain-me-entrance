@@ -4,7 +4,7 @@ Last updated: 2026-09-09
 
 ## Current phase
 
-Deployed — `https://cleanbrain.me` is live in production, serving the MVP. CI auto-deploy (`ENABLE_PRODUCTION_DEPLOY`) is not yet enabled; the current production Pod was rolled out manually during first-time deployment.
+Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a normal push to `main` now deploys automatically end to end (verified). This phase's original exit criteria are all met; the next phase is ordinary feature work.
 
 ## Completed
 
@@ -16,14 +16,16 @@ Deployed — `https://cleanbrain.me` is live in production, serving the MVP. CI 
 - Verified `vue-tsc -b` (typecheck) and `npm run build` both pass.
 - Ran the bootstrap acceptance test in a fresh, isolated agent session starting only from `CLAUDE.md` — all five acceptance questions in `docs/product/goals.md` were answered correctly with repository-path citations and no gaps or guesses.
 - Initialized git locally, committed the foundation + MVP, created the public GitHub repository `cleanbrain-developer/cleanbrain-me-entrance`, and pushed to `main`.
-- Added `Dockerfile`, `nginx.conf`, `.dockerignore`, and `.github/workflows/deploy.yml` (test → build/push GHCR → SSH deploy, gated by `ENABLE_PRODUCTION_DEPLOY`), matching the `english-core-speaking` / `kioti-crm-discount-enhance-demo` CI/CD model. Verified buildable via a real GitHub Actions run.
+- Added `Dockerfile`, `nginx.conf`, `.dockerignore`, and `.github/workflows/deploy.yml` (test → build/push GHCR → SSH deploy, gated by `ENABLE_PRODUCTION_DEPLOY`), matching the `english-core-speaking` / `kioti-crm-discount-enhance-demo` CI/CD model.
 - Confirmed the GHCR package (`ghcr.io/cleanbrain-developer/cleanbrain-me-entrance`) is public — no `imagePullSecrets` needed.
 - Set `HETZNER_SSH_HOST`/`USER`/`PORT`/`PRIVATE_KEY`/`KNOWN_HOSTS` GitHub Actions secrets on this repo, reusing `english-core-speaking`'s existing CI SSH keypair (same server, same `deploy` Linux account).
 - `cleanbrain-me-infra`: added `kubernetes/namespaces/cleanbrain-me-entrance.yaml` and `kubernetes/apps/entrance/{rbac,deployment,service,httproute}.yaml`.
 - Confirmed the apex `cleanbrain.me` A record already existed (DNS was not a blocker).
 - Discovered the live Gateway's TLS mechanism is cert-manager's Gateway API integration ("Gateway Shim": a `Certificate` is auto-issued per HTTPS listener, owned by the Gateway) rather than a manually-applied `Certificate` object. Added a new `entrance-https` listener (hostname `cleanbrain.me`, `certificateRefs: [cleanbrain-me-entrance-tls]`) to the live `cleanbrain-me-gateway` Gateway; cert-manager auto-issued and the certificate is `Ready`.
-- Applied `namespace` → `rbac` → `deployment` → `service` → `httproute` to the live cluster as cluster administrator. `pod/web` is `Running 1/1`, `httproute/entrance` shows `Accepted: True` / `ResolvedRefs: True`.
-- **Verified end to end**: `curl -I https://cleanbrain.me` returns `HTTP/2 200` (nginx/1.27.5). The service directory is live in production.
+- Applied `namespace` → `rbac` → `deployment` → `service` → `httproute` to the live cluster as cluster administrator. `pod/web` `Running 1/1`, `httproute/entrance` `Accepted: True` / `ResolvedRefs: True`.
+- Created the third-application CI ServiceAccount token (`ci-deployer-cleanbrain-me-entrance-token`) and merged its context into `/home/deploy/.kube/config` alongside `english-core-speaking`'s, without disturbing the existing `current-context`. Verified: `kubectl auth whoami` → `system:serviceaccount:cleanbrain-me-entrance:ci-deployer`; `can-i patch deployment/web` → `yes`; `can-i get secrets` → `no`.
+- Set `ENABLE_PRODUCTION_DEPLOY=true` and triggered a real workflow run (`34362967974`): `test` → `build-and-push` → `deploy` all succeeded, meaning CI's SSH → `kubectl set image` → `rollout status` path is confirmed working end to end, not just theoretically wired up.
+- **Verified end to end, twice**: `curl -I https://cleanbrain.me` returns `HTTP/2 200` both before and after the CI-driven deploy. The service directory is live in production with a working CI/CD pipeline.
 
 ## In progress
 
@@ -31,10 +33,8 @@ Deployed — `https://cleanbrain.me` is live in production, serving the MVP. CI 
 
 ## Next
 
-1. Set up the CI ServiceAccount token and merge this app's context into `/home/deploy/.kube/config` on the deploy host (third application sharing that file — see `cleanbrain-me-infra` README "Multi-application kubeconfig on the deploy host").
-2. Verify the scoped `ci-deployer` identity's `kubectl auth can-i` checks (allowed: `get`/`patch` on `deployment/web`; denied: `secrets`, cross-namespace) before enabling CI deploys.
-3. Set `ENABLE_PRODUCTION_DEPLOY=true` as a repository variable, then push (or re-run) to confirm a real CI-driven deploy (`kubectl set image` + `rollout status`) succeeds end to end.
-4. Add real `developer.cleanbrain.me` service entry once that project exists (currently `planned` placeholder in `src/config/services.ts`).
+1. Add a real `developer.cleanbrain.me` service entry once that project exists (currently a `planned` placeholder in `src/config/services.ts`).
+2. Ordinary feature/content work from here — no remaining foundation or deployment-pipeline gaps.
 
 ## Open decisions
 
@@ -55,4 +55,4 @@ Deployed — `https://cleanbrain.me` is live in production, serving the MVP. CI 
 - The foundation and MVP are committed as a reviewable baseline. (Met.)
 - Dockerfile and CI workflow exist in this repository and have been verified to build successfully via GitHub Actions. (Met.)
 - The corresponding `cleanbrain-me-infra` manifest exists and the service is reachable at `https://cleanbrain.me`. (Met.)
-- CI-driven deploys (`ENABLE_PRODUCTION_DEPLOY=true`) are verified working end to end. (Not yet met — see Next.)
+- CI-driven deploys (`ENABLE_PRODUCTION_DEPLOY=true`) are verified working end to end. (Met.)

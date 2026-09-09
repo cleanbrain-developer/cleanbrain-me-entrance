@@ -32,12 +32,12 @@ principles:
   - deterministic-quality-gates-when-implemented
 
 current_phase:
-  id: deployed
+  id: deployed-ci-driven
   status: active
   goal: >-
-    https://cleanbrain.me is live in production. Remaining work is enabling
-    CI-driven deploys (ENABLE_PRODUCTION_DEPLOY) so future pushes to main
-    roll out automatically instead of requiring a manual kubectl step.
+    https://cleanbrain.me is live in production with CI-driven deploys
+    verified end to end. No remaining foundation or deployment gaps;
+    ordinary feature/content work from here.
 
 context:
   human_entrypoint: README.md
