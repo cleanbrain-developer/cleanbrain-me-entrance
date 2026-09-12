@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-09-09
+Last updated: 2026-09-13
 
 ## Current phase
 
@@ -29,6 +29,7 @@ Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a nor
 - Removed the `developer` placeholder from `src/config/services.ts` — that project hasn't started, and a `planned` entry for a nonexistent service was misleading on a live production page. Only `english-core-speaking` is listed now.
 - Added `category` to the `Service` shape's data and grouping behavior in the UI: `ServiceGrid.vue` now sections services by `category` (first-seen order) with a heading per section, always shown — including today's single `"Learning"` category (`english-core-speaking`) — so the layout doesn't change shape as more categories are added later.
 - UI/UX polish: hover elevation (shadow, not just a border color change) on cards, `:focus-visible` outline for keyboard navigation, and dark-mode-aware CSS variables for status badge colors (previously hardcoded light-mode hex values with weak dark-mode contrast).
+- Added a real `developer` entry to `src/config/services.ts` (`https://developer.cleanbrain.me`, category `"Portfolio"`, status `active`) now that `cleanbrain-me-developer` is actually live in production with a working CI/CD pipeline — not a `planned` placeholder this time, per the decision recorded below when the earlier placeholder was removed. `ServiceGrid.vue` now renders two category sections (`Portfolio`, `Learning`). Verified: `vue-tsc -b`/`npm run build` pass, and a real browser screenshot confirms the card renders correctly and its link resolves to `https://developer.cleanbrain.me/`.
 
 ## In progress
 
@@ -36,8 +37,7 @@ Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a nor
 
 ## Next
 
-1. Add a real `developer.cleanbrain.me` service entry once that project actually exists and is ready to launch — not before, per the decision above.
-2. Ordinary feature/content work from here — no remaining foundation or deployment-pipeline gaps.
+1. Ordinary feature/content work from here — no remaining foundation or deployment-pipeline gaps.
 
 ## Open decisions
 
