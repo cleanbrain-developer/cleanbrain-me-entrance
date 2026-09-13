@@ -4,8 +4,8 @@ export const services: Service[] = [
   {
     id: "developer",
     name: "developer.cleanbrain.me",
-    description: "백엔드 엔지니어 포트폴리오 & RelayHub 라이브 엔지니어링 랩",
-    descriptionEn: "Backend engineer portfolio & RelayHub live engineering lab",
+    description: "백엔드 엔지니어 포트폴리오 & 라이브 엔지니어링 랩",
+    descriptionEn: "Backend engineer portfolio & live engineering lab",
     url: "https://developer.cleanbrain.me",
     status: "active",
     category: "Portfolio",
