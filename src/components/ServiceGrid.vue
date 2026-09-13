@@ -9,19 +9,17 @@ const props = defineProps<{ services: Service[]; locale: Locale }>();
 const UNCATEGORIZED = "General";
 
 const groups = computed(() => {
-  const order: string[] = [];
   const byCategory = new Map<string, Service[]>();
 
   for (const service of props.services) {
     const category = service.category ?? UNCATEGORIZED;
-    if (!byCategory.has(category)) {
-      byCategory.set(category, []);
-      order.push(category);
-    }
+    if (!byCategory.has(category)) byCategory.set(category, []);
     byCategory.get(category)!.push(service);
   }
 
-  return order.map((category) => ({ category, services: byCategory.get(category)! }));
+  return Array.from(byCategory.keys())
+    .sort((a, b) => a.localeCompare(b))
+    .map((category) => ({ category, services: byCategory.get(category)! }));
 });
 </script>
 
