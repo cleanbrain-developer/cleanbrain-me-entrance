@@ -14,3 +14,28 @@ export function detectLocale(): Locale {
   }
   return "en";
 }
+
+// A visitor can override the detected locale with the KO/EN toggle in the
+// header; the choice is remembered per-browser so it doesn't reset on
+// every visit. This is a plain per-viewer convenience, not shared state,
+// so localStorage is appropriate -- wrapped defensively since it can throw
+// (private browsing, disabled storage) and that must never break the page.
+const STORAGE_KEY = "cleanbrain-entrance-locale";
+
+export function loadStoredLocale(): Locale | null {
+  try {
+    const value = localStorage.getItem(STORAGE_KEY);
+    return value === "ko" || value === "en" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+export function storeLocale(locale: Locale): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, locale);
+  } catch {
+    // Storage unavailable -- the toggle still works for the current page
+    // view via reactive state, it just won't be remembered next visit.
+  }
+}

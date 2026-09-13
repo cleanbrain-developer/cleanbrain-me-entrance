@@ -5,7 +5,7 @@
 - A single page listing services as cards: name, description, status, one-click navigation.
 - A single config file as the source of service metadata (`id`, `name`, `description`, `descriptionEn`, `url`, `status`, optional `category`/`external`).
 - Responsive layout (desktop grid, mobile single column) with `prefers-color-scheme`-based light/dark styling, no manual theme toggle.
-- Korean by default, English for non-Korean browser locales (`navigator.language`-based, not IP/geo detection) — see `docs/architecture/overview.md` "Internationalization".
+- Korean by default, English for non-Korean browser locales (`navigator.language`-based, not IP/geo detection), overridable with a manual KO/EN toggle whose choice is remembered per-browser — see `docs/architecture/overview.md` "Internationalization".
 - Static build deployable as a container image.
 
 ## V1 out of scope
