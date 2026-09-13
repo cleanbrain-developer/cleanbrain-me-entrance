@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { Service } from "../types/service";
+import type { Locale } from "../i18n/locale";
+import { strings } from "../i18n/strings";
 
-const props = defineProps<{ service: Service }>();
+const props = defineProps<{ service: Service; locale: Locale }>();
 
 const statusLabel: Record<Service["status"], string> = {
   active: "Active",
@@ -10,6 +13,10 @@ const statusLabel: Record<Service["status"], string> = {
 };
 
 const isNavigable = props.service.status === "active";
+
+const description = computed(() =>
+  props.locale === "en" && props.service.descriptionEn ? props.service.descriptionEn : props.service.description,
+);
 </script>
 
 <template>
@@ -23,8 +30,8 @@ const isNavigable = props.service.status === "active";
       <h2 class="card-title">{{ service.name }}</h2>
       <span class="status-badge" :class="`status-${service.status}`">{{ statusLabel[service.status] }}</span>
     </div>
-    <p class="card-description">{{ service.description }}</p>
-    <span class="card-action">{{ isNavigable ? "이동하기 →" : "준비 중" }}</span>
+    <p class="card-description">{{ description }}</p>
+    <span class="card-action">{{ isNavigable ? strings[locale].actionActive : strings[locale].actionInactive }}</span>
   </component>
 </template>
 

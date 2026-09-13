@@ -28,6 +28,10 @@ src/components/ServiceCard.vue  ──(plain <a href>)──>  external subdomai
 
 `App.vue` composes the header and `ServiceGrid`; `main.ts` mounts the app. There is no router — the page has exactly one view.
 
+### Internationalization
+
+`src/i18n/locale.ts` detects `"ko"` vs `"en"` from the browser's `navigator.languages`/`navigator.language` — not IP/geo-based country detection, since this is a backend-less static site with no request to inspect server-side. Anything that isn't Korean falls back to English. `src/i18n/strings.ts` holds the UI chrome strings (subtitle, meta description, card action labels) per locale; `Service.descriptionEn` is an optional per-service override consumed by `ServiceCard.vue`, falling back to `Service.description` (Korean) when absent. `App.vue` sets `document.documentElement.lang` and the `<meta name="description">` content on mount, since `index.html` itself is locale-agnostic static markup.
+
 ## External integrations
 
 Each listed service is an independently deployed subdomain (e.g. `english-core-speaking.cleanbrain.me`). Entrance's only integration with them is a static URL in the service config — it does not call their APIs, share sessions, or depend on their availability at build or runtime.

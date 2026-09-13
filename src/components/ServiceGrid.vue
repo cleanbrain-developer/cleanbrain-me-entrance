@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { Service } from "../types/service";
+import type { Locale } from "../i18n/locale";
 import ServiceCard from "./ServiceCard.vue";
 
-const props = defineProps<{ services: Service[] }>();
+const props = defineProps<{ services: Service[]; locale: Locale }>();
 
 const UNCATEGORIZED = "General";
 
@@ -29,7 +30,7 @@ const groups = computed(() => {
     <section v-for="group in groups" :key="group.category" class="group">
       <h2 class="group-title">{{ group.category }}</h2>
       <div class="grid">
-        <ServiceCard v-for="service in group.services" :key="service.id" :service="service" />
+        <ServiceCard v-for="service in group.services" :key="service.id" :service="service" :locale="locale" />
       </div>
     </section>
   </div>

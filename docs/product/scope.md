@@ -3,8 +3,9 @@
 ## V1 in scope
 
 - A single page listing services as cards: name, description, status, one-click navigation.
-- A single config file as the source of service metadata (`id`, `name`, `description`, `url`, `status`, optional `category`/`external`).
+- A single config file as the source of service metadata (`id`, `name`, `description`, `descriptionEn`, `url`, `status`, optional `category`/`external`).
 - Responsive layout (desktop grid, mobile single column) with `prefers-color-scheme`-based light/dark styling, no manual theme toggle.
+- Korean by default, English for non-Korean browser locales (`navigator.language`-based, not IP/geo detection) — see `docs/architecture/overview.md` "Internationalization".
 - Static build deployable as a container image.
 
 ## V1 out of scope
@@ -19,7 +20,8 @@
 ## Open decisions
 
 - The optional `external` field on the service metadata shape has no defined behavior yet — it exists in the type but nothing branches on it. Decide whether to give it real meaning (e.g. same-tab vs new-tab navigation) or drop it before it looks load-bearing.
-- No listed service is `planned` right now (the `developer` placeholder was removed from `src/config/services.ts` until that project actually exists) — decide whether a `planned` entry should ever be shown pre-launch, or only added once a service is real.
+- Whether a `planned` (pre-launch) entry should ever be shown, or a service should only appear once it's real — no service is currently `planned`, but the `ServiceStatus` type still allows it.
+- `descriptionEn` is optional and only set for the two current services; decide whether it should become required (enforced at review time, since there's no lint rule for it) as more services are added, so a new entry can't silently ship Korean-only.
 
 ## Scope rule
 

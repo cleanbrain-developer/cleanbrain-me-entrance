@@ -30,6 +30,7 @@ Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a nor
 - Added `category` to the `Service` shape's data and grouping behavior in the UI: `ServiceGrid.vue` now sections services by `category` (first-seen order) with a heading per section, always shown — including today's single `"Learning"` category (`english-core-speaking`) — so the layout doesn't change shape as more categories are added later.
 - UI/UX polish: hover elevation (shadow, not just a border color change) on cards, `:focus-visible` outline for keyboard navigation, and dark-mode-aware CSS variables for status badge colors (previously hardcoded light-mode hex values with weak dark-mode contrast).
 - Added a real `developer` entry to `src/config/services.ts` (`https://developer.cleanbrain.me`, category `"Portfolio"`, status `active`) now that `cleanbrain-me-developer` is actually live in production with a working CI/CD pipeline — not a `planned` placeholder this time, per the decision recorded below when the earlier placeholder was removed. `ServiceGrid.vue` now renders two category sections (`Portfolio`, `Learning`). Verified: `vue-tsc -b`/`npm run build` pass, and a real browser screenshot confirms the card renders correctly and its link resolves to `https://developer.cleanbrain.me/`.
+- Added browser-locale-based internationalization: `src/i18n/locale.ts` (`detectLocale()` from `navigator.languages`, Korean vs. English fallback), `src/i18n/strings.ts` (UI chrome strings), and `Service.descriptionEn` (optional per-service English description, falling back to the Korean `description`). `App.vue` sets `document.documentElement.lang` and the meta description on mount. Verified with a headless-browser check (Playwright, temporary — not added as a project dependency) across three `context.locale` values: `ko-KR` renders Korean, `en-US` and `ja-JP` (non-Korean) both render English — confirmed via both DOM text assertions and screenshots.
 
 ## In progress
 
@@ -43,6 +44,7 @@ Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a nor
 
 - The `external` field on `Service` has no defined behavior yet (see `docs/product/scope.md`).
 - Whether a `planned` (pre-launch) entry should ever be shown, or a service should only appear once it's real (see `docs/product/scope.md`).
+- Whether `descriptionEn` should become a required field as more services are added (see `docs/product/scope.md`).
 - `kioti-crm-discount`'s TLS/HTTPS listener was found to be missing from the live Gateway during this work (unrelated to entrance, noted in `cleanbrain-me-infra`'s README) — not this repository's concern, but flagged for awareness.
 
 ## Known constraints

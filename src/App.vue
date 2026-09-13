@@ -3,10 +3,16 @@ import { onMounted, ref } from "vue";
 import ServiceGrid from "./components/ServiceGrid.vue";
 import { services } from "./config/services";
 import { fetchTodayCount, recordVisitOnce } from "./lib/visitorCounter";
+import { detectLocale } from "./i18n/locale";
+import { strings } from "./i18n/strings";
 
+const locale = detectLocale();
 const todayCount = ref<number | null>(null);
 
 onMounted(async () => {
+  document.documentElement.lang = locale;
+  document.querySelector('meta[name="description"]')?.setAttribute("content", strings[locale].metaDescription);
+
   await recordVisitOnce();
   todayCount.value = await fetchTodayCount();
 });
@@ -17,14 +23,14 @@ onMounted(async () => {
     <header class="header">
       <h1>cleanbrain.me</h1>
       <p class="subtitle">
-        개인 프로젝트/서비스 Entrance
+        {{ strings[locale].subtitle }}
         <span v-if="todayCount !== null" class="visitor-count">
-          · Today {{ todayCount }}
+          · {{ strings[locale].visitorCountPrefix }} {{ todayCount }}
         </span>
       </p>
     </header>
     <main>
-      <ServiceGrid :services="services" />
+      <ServiceGrid :services="services" :locale="locale" />
     </main>
   </div>
 </template>
