@@ -27,11 +27,14 @@ const description = computed(() =>
     v-bind="isNavigable ? { href: service.url, target: '_blank', rel: 'noopener noreferrer' } : {}"
   >
     <div class="card-header">
-      <h2 class="card-title">{{ service.name }}</h2>
+      <h3 class="card-title">{{ service.name }}</h3>
       <span class="status-badge" :class="`status-${service.status}`">{{ statusLabel[service.status] }}</span>
     </div>
     <p class="card-description">{{ description }}</p>
-    <span class="card-action">{{ isNavigable ? strings[locale].actionActive : strings[locale].actionInactive }}</span>
+    <span class="card-action">
+      {{ isNavigable ? strings[locale].actionActive : strings[locale].actionInactive }}
+      <span v-if="isNavigable" class="sr-only">({{ strings[locale].opensInNewTab }})</span>
+    </span>
   </component>
 </template>
 

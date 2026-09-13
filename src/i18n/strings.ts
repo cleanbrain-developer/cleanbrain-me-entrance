@@ -7,6 +7,8 @@ interface Strings {
   actionInactive: string;
   visitorCountPrefix: string;
   allTimeCountPrefix: string;
+  uncategorized: string;
+  opensInNewTab: string;
 }
 
 export const strings: Record<Locale, Strings> = {
@@ -17,6 +19,8 @@ export const strings: Record<Locale, Strings> = {
     actionInactive: "준비 중",
     visitorCountPrefix: "오늘",
     allTimeCountPrefix: "누적",
+    uncategorized: "일반",
+    opensInNewTab: "새 탭에서 열림",
   },
   en: {
     subtitle: "Personal projects & services",
@@ -25,5 +29,7 @@ export const strings: Record<Locale, Strings> = {
     actionInactive: "Coming soon",
     visitorCountPrefix: "Today",
     allTimeCountPrefix: "All",
+    uncategorized: "General",
+    opensInNewTab: "opens in a new tab",
   },
 };

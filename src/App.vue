@@ -24,14 +24,11 @@ onMounted(async () => {
   <div class="page">
     <header class="header">
       <h1>cleanbrain.me</h1>
-      <p class="subtitle">
-        {{ strings[locale].subtitle }}
-        <span v-if="todayCount !== null" class="visitor-count">
-          · {{ strings[locale].visitorCountPrefix }} {{ todayCount }}
-        </span>
-        <span v-if="allTimeCount !== null" class="visitor-count">
-          · {{ strings[locale].allTimeCountPrefix }} {{ allTimeCount }}
-        </span>
+      <p class="subtitle">{{ strings[locale].subtitle }}</p>
+      <p v-if="todayCount !== null || allTimeCount !== null" class="visitor-count">
+        <span v-if="todayCount !== null">{{ strings[locale].visitorCountPrefix }} {{ todayCount }}</span>
+        <span v-if="todayCount !== null && allTimeCount !== null"> · </span>
+        <span v-if="allTimeCount !== null">{{ strings[locale].allTimeCountPrefix }} {{ allTimeCount }}</span>
       </p>
     </header>
     <main>
@@ -65,7 +62,8 @@ onMounted(async () => {
 }
 
 .visitor-count {
+  margin: 0.35rem 0 0;
   color: var(--text-secondary);
-  opacity: 0.8;
+  font-size: 0.8rem;
 }
 </style>

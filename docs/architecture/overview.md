@@ -30,7 +30,7 @@ src/components/ServiceCard.vue  ──(plain <a href>)──>  external subdomai
 
 ### Internationalization
 
-`src/i18n/locale.ts` detects `"ko"` vs `"en"` from the browser's `navigator.languages`/`navigator.language` — not IP/geo-based country detection, since this is a backend-less static site with no request to inspect server-side. Anything that isn't Korean falls back to English. `src/i18n/strings.ts` holds the UI chrome strings (subtitle, meta description, card action labels) per locale; `Service.descriptionEn` is an optional per-service override consumed by `ServiceCard.vue`, falling back to `Service.description` (Korean) when absent. `App.vue` sets `document.documentElement.lang` and the `<meta name="description">` content on mount, since `index.html` itself is locale-agnostic static markup.
+`src/i18n/locale.ts` detects `"ko"` vs `"en"` from the browser's `navigator.languages`/`navigator.language` — not IP/geo-based country detection, since this is a backend-less static site with no request to inspect server-side. Anything that isn't Korean falls back to English. `src/i18n/strings.ts` holds the UI chrome strings (subtitle, meta description, card action labels) per locale; `Service.descriptionEn` is an optional per-service override consumed by `ServiceCard.vue`, falling back to `Service.description` (Korean) when absent. `App.vue` sets `document.documentElement.lang` and the `<meta name="description">` content on mount, since `index.html` itself is locale-agnostic static markup. This client-only switch is also why `index.html`'s Open Graph/Twitter Card meta tags are fixed in Korean — a link-preview crawler that doesn't execute JavaScript sees only the static markup, so there is no per-visitor-locale preview without SSR.
 
 ## External integrations
 

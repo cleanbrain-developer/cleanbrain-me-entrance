@@ -2,17 +2,17 @@
 import { computed } from "vue";
 import type { Service } from "../types/service";
 import type { Locale } from "../i18n/locale";
+import { strings } from "../i18n/strings";
 import ServiceCard from "./ServiceCard.vue";
 
 const props = defineProps<{ services: Service[]; locale: Locale }>();
 
-const UNCATEGORIZED = "General";
-
 const groups = computed(() => {
+  const uncategorized = strings[props.locale].uncategorized;
   const byCategory = new Map<string, Service[]>();
 
   for (const service of props.services) {
-    const category = service.category ?? UNCATEGORIZED;
+    const category = service.category ?? uncategorized;
     if (!byCategory.has(category)) byCategory.set(category, []);
     byCategory.get(category)!.push(service);
   }
