@@ -6,6 +6,7 @@ interface Strings {
   actionActive: string;
   actionInactive: string;
   visitorCountPrefix: string;
+  allTimeCountPrefix: string;
 }
 
 export const strings: Record<Locale, Strings> = {
@@ -15,6 +16,7 @@ export const strings: Record<Locale, Strings> = {
     actionActive: "이동하기 →",
     actionInactive: "준비 중",
     visitorCountPrefix: "오늘",
+    allTimeCountPrefix: "누적",
   },
   en: {
     subtitle: "Personal projects & services",
@@ -22,5 +24,6 @@ export const strings: Record<Locale, Strings> = {
     actionActive: "Open →",
     actionInactive: "Coming soon",
     visitorCountPrefix: "Today",
+    allTimeCountPrefix: "All",
   },
 };

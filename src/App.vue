@@ -2,12 +2,13 @@
 import { onMounted, ref } from "vue";
 import ServiceGrid from "./components/ServiceGrid.vue";
 import { services } from "./config/services";
-import { fetchTodayCount, recordVisitOnce } from "./lib/visitorCounter";
+import { fetchAllTimeCount, fetchTodayCount, recordVisitOnce } from "./lib/visitorCounter";
 import { detectLocale } from "./i18n/locale";
 import { strings } from "./i18n/strings";
 
 const locale = detectLocale();
 const todayCount = ref<number | null>(null);
+const allTimeCount = ref<number | null>(null);
 
 onMounted(async () => {
   document.documentElement.lang = locale;
@@ -15,6 +16,7 @@ onMounted(async () => {
 
   await recordVisitOnce();
   todayCount.value = await fetchTodayCount();
+  allTimeCount.value = await fetchAllTimeCount();
 });
 </script>
 
@@ -26,6 +28,9 @@ onMounted(async () => {
         {{ strings[locale].subtitle }}
         <span v-if="todayCount !== null" class="visitor-count">
           · {{ strings[locale].visitorCountPrefix }} {{ todayCount }}
+        </span>
+        <span v-if="allTimeCount !== null" class="visitor-count">
+          · {{ strings[locale].allTimeCountPrefix }} {{ allTimeCount }}
         </span>
       </p>
     </header>
