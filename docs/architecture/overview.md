@@ -34,7 +34,7 @@ src/components/ServiceCard.vue  ──(plain <a href>)──>  external subdomai
 
 ## External integrations
 
-Each listed service is an independently deployed subdomain (e.g. `english-core-speaking.cleanbrain.me`). Entrance's only integration with them is a static URL in the service config — it does not call their APIs, share sessions, or depend on their availability at build or runtime.
+Each listed service is an independently deployed subdomain (e.g. `english-core-speaking.education.cleanbrain.me`). Entrance's only integration with them is a static URL in the service config — it does not call their APIs, share sessions, or depend on their availability at build or runtime.
 
 ## Deployment target
 

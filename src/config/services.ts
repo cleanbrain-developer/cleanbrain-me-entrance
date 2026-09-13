@@ -15,7 +15,7 @@ export const services: Service[] = [
     name: "English Core Speaking",
     description: "영어 말하기 학습 서비스",
     descriptionEn: "An English speaking practice service",
-    url: "https://english-core-speaking.cleanbrain.me",
+    url: "https://english-core-speaking.education.cleanbrain.me",
     status: "active",
     category: "Learning",
   },

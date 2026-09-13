@@ -6,7 +6,7 @@ cleanbrain.me Entrance is the landing page served at the `cleanbrain.me` root do
 
 ## Problem
 
-`cleanbrain.me` currently has no page at its root. Services live on subdomains (`english-core-speaking.cleanbrain.me`, and eventually `developer.cleanbrain.me` and others), but nothing ties them together for a visitor who lands on the bare domain.
+`cleanbrain.me` currently has no page at its root. Services live on subdomains (`english-core-speaking.education.cleanbrain.me`, and eventually `developer.cleanbrain.me` and others), but nothing ties them together for a visitor who lands on the bare domain.
 
 ## Product thesis
 
