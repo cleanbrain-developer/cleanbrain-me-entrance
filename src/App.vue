@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from "vue";
 import ServiceGrid from "./components/ServiceGrid.vue";
 import { services } from "./config/services";
-import { fetchAllTimeCount, fetchTodayCount, recordVisitOnce } from "./lib/visitorCounter";
+import { fetchAllTimeCount, fetchTodayCount, recordVisit } from "./lib/visitorCounter";
 import { detectLocale, loadStoredLocale, storeLocale, type Locale } from "./i18n/locale";
 import { strings } from "./i18n/strings";
 
@@ -28,7 +28,7 @@ watch(locale, applyLocaleToDocument);
 onMounted(async () => {
   applyLocaleToDocument(locale.value);
 
-  await recordVisitOnce();
+  await recordVisit();
   todayCount.value = await fetchTodayCount();
   allTimeCount.value = await fetchAllTimeCount();
 });
