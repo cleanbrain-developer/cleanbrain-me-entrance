@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from "vue";
 import ServiceGrid from "./components/ServiceGrid.vue";
 import { services } from "./config/services";
-import { fetchAllTimeCount, fetchTodayCount, recordVisit } from "./lib/visitorCounter";
+import { debugVisitorCounter, fetchAllTimeCount, fetchTodayCount, recordVisit } from "./lib/visitorCounter";
 import { detectLocale, loadStoredLocale, storeLocale, type Locale } from "./i18n/locale";
 import { strings } from "./i18n/strings";
 
@@ -12,6 +12,10 @@ import { strings } from "./i18n/strings";
 const locale = ref<Locale>(loadStoredLocale() ?? detectLocale());
 const todayCount = ref<number | null>(null);
 const allTimeCount = ref<number | null>(null);
+// TEMPORARY: see debugVisitorCounter's comment -- remove this and the
+// <p class="visitor-count-debug"> block below once the mobile-only report
+// is diagnosed.
+const debugInfo = ref<string | null>(null);
 
 function applyLocaleToDocument(value: Locale) {
   document.documentElement.lang = value;
@@ -31,6 +35,7 @@ onMounted(async () => {
   await recordVisit();
   todayCount.value = await fetchTodayCount();
   allTimeCount.value = await fetchAllTimeCount();
+  debugInfo.value = await debugVisitorCounter();
 });
 </script>
 
@@ -67,6 +72,7 @@ onMounted(async () => {
         <span v-if="todayCount !== null && allTimeCount !== null"> · </span>
         <span v-if="allTimeCount !== null">{{ strings[locale].allTimeCountPrefix }} {{ allTimeCount }}</span>
       </p>
+      <p v-if="debugInfo" class="visitor-count-debug">{{ debugInfo }}</p>
     </header>
     <main>
       <ServiceGrid :services="services" :locale="locale" />
@@ -148,5 +154,18 @@ onMounted(async () => {
   margin: 0.35rem 0 0;
   color: var(--text-secondary);
   font-size: 0.8rem;
+}
+
+/* TEMPORARY diagnostic styling -- remove alongside debugInfo/debugVisitorCounter. */
+.visitor-count-debug {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem;
+  color: #b3401f;
+  background: rgba(179, 64, 31, 0.08);
+  border: 1px solid rgba(179, 64, 31, 0.3);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: ui-monospace, monospace;
+  word-break: break-all;
 }
 </style>
