@@ -38,6 +38,7 @@ Deployed, CI-driven — `https://cleanbrain.me`는 production에서 live 상태�
 
 - 위에서 보류되었던 항목에 대한 maintainer의 decision에 따라 header에 수동 KO/EN toggle을 추가함. `locale`은 plain constant 대신 `ref<Locale>`이 되었으며, 저장된 선택(`loadStoredLocale()`)에서 seed되고 없으면 `detectLocale()`로 fallback하므로 첫 방문자에 대한 기본 동작(한국에서는 한국어, 그 외에는 영어)은 변하지 않음. KO/EN을 클릭하면 `setLocale()`이 호출되어 ref를 업데이트하고(하위 모든 것은 기존 `:locale` prop chain을 통해 반응함) `storeLocale()`을 통해 선택을 `localStorage`에 영속화하여 다음 방문 시 기억되도록 함 — storage access가 throw할 수 있으므로 방어적으로 wrapping됨. Playwright(임시, 프로젝트 dependency 아님)로 검증함: `ko-KR` 방문자는 기본적으로 한국어이며, EN으로 toggle하면 DOM(`lang`, subtitle, card action text)이 즉시 업데이트되고 페이지 reload 후에도 유지됨; `en-US` 방문자는 기본적으로 영어이며 KO로 다시 toggle할 수 있음; axe-core는 toggle된 상태에서 violation 0건을 보였음.
 - `agent-dev-starter`의 ADR-0004/ADR-0005 decision(bilingual documentation, mandatory and cascading)에 따라 이 repository의 모든 Markdown 문서에 대해 `.ko.md` Korean companion을 추가함(2026-09-17). 그 decision에 따라 `PROJECT.yaml`은 제외됨. 영어는 계속 canonical이며, agent bootstrap은 계속 영어 파일만 읽음.
+- `agent-dev-starter`에서 `scripts/check-ko-companions.sh`를 복사하고, `.github/workflows/deploy.yml`의 `test` job에 `--missing-only`로 실행해서 `.ko.md` companion이 누락되면 build를 실패시키는 step을 추가함, `agent-dev-starter`의 `ADR-0009`에 따름(2026-09-18).
 
 ## In progress
 
