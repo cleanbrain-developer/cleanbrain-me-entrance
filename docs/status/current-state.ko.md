@@ -48,7 +48,12 @@ Deployed, CI-driven — `https://cleanbrain.me`는 production에서 live 상태�
   - 이 프로젝트에는 `.ai/skills/` 디렉토리가 없어서, `ADR-0012`의 디렉토리 이동 대상이 없었음.
   - `README.md`와 `docs/product/goals.md`(그리고 그 `.ko.md` companion)에 남아 있던 오래된 `CLAUDE.md` 참조를 수정함.
   - 수정된 모든 문서의 `.ko.md` companion을 같은 변경 안에서 업데이트함; `scripts/check-ko-companions.sh --missing-only`는 깨끗하게 통과함(누락 0건).
-  - 의도적으로 하지 않은 것: 실제로 `specify init`을 실행하거나 pinned Spec Kit CLI(`specify-cli==1.0.8`)를 설치하는 것 — 아래 "Known constraints" 참고.
+  - 당시에는 의도적으로 하지 않았던 것: 실제로 `specify init`을 실행하거나 pinned Spec Kit CLI(`specify-cli==1.0.8`)를 설치하는 것 — 아래(2026-09-20)에서 해소됨.
+- 실제 pinned Spec Kit CLI(`specify-cli==1.0.8`, 동작하는 Python 3.12 + `uv` toolchain 기반)를 설치하고 이 repository에서 실제로 실행함(2026-09-20):
+  - `specify init --here --force --ignore-agent-tools --integration claude --script sh --non-interactive`로 실제 `.specify/templates/`, `.specify/scripts/`, `.specify/workflows/`, `.claude/skills/speckit-*/SKILL.md`를 생성함; `specify integration install codex --force`로 대응하는 `.agents/skills/speckit-*/SKILL.md`를 추가함. 둘 다 `PROJECT.yaml`의 `supported_agents.initial`에 이미 나열되어 있었고, 이제 손으로 작성된 파일이 아니라 실제 CLI가 생성한 파일임.
+  - `specify init`은 이전 migration에서 손으로 작성한 `.specify/memory/constitution.md`를 이미 customize된 파일로 인식하여("Constitution setup (existing file preserved)") 건드리지 않았음 — install 전후로 byte 단위로 동일함(`git diff` 결과 없음)을 검증함. 여전히 이 프로젝트의 실제 원칙을 담고 있으며, 일반적인 placeholder template이 아님.
+  - `agent-dev-starter`에서 `scripts/check-ko-companions.sh`를 복사함(`ADR-0014`): 이제 vendored Spec Kit asset(`.specify/templates|scripts|workflows|integrations`, 모든 `.claude/skills/speckit-*`/`.agents/skills/speckit-*`)을 `.ko.md` 의무 대상에서 제외함 — 해당 content는 upstream이 작성한 것이며 `specify upgrade`마다 전체가 교체되기 때문임. `.specify/memory/constitution.md`는 계속 의무 대상이며 이미 `.ko.md` companion이 있었음. `scripts/check-ko-companions.sh --missing-only`는 깨끗하게 통과함(누락 0건).
+  - 이는 앞선 업데이트에서 "Known constraints"에 기록된 gap을 해소함.
 
 ## In progress
 
@@ -56,8 +61,7 @@ Deployed, CI-driven — `https://cleanbrain.me`는 production에서 live 상태�
 
 ## Next
 
-1. 여기서부터는 일반적인 feature/content 작업 — 남아 있는 foundation이나 배포 파이프라인 gap은 없음.
-2. 이 환경에서 동작하는 Python/`uv`/`pipx` toolchain이 확보되면, 실제 pinned Spec Kit CLI(`uv tool install specify-cli==1.0.8`, 이후 `specify init --here --integration claude --integration codex`)를 실행하여 `.specify/`의 template/script와 실제 `.claude/skills/speckit-*/SKILL.md` / `.agents/skills/speckit-*/SKILL.md` 파일을 생성함 — `agent-dev-starter`의 `ADR-0010`에 따라 손으로 작성하지 않음. 이 migration을 위해 손으로 작성한 `.specify/memory/constitution.md`는 `specify init`이 그 자리에 생성하는 내용과 조율되어야 함.
+1. 여기서부터는 일반적인 feature/content 작업 — 남아 있는 foundation, 배포 파이프라인, 또는 Spec Kit tooling gap은 없음.
 
 ## Open decisions
 
@@ -72,7 +76,7 @@ Deployed, CI-driven — `https://cleanbrain.me`는 production에서 live 상태�
 - Target cluster는 2 vCPU / 4 GB RAM / 40 GB disk(`cleanbrain-me-infra` 기준)입니다 — 모든 service를 합친 CPU limit이 이제 박스의 vCPU 수를 초과하므로(reservation이 아니라 ceiling — 해당 repository의 "Resource budget" 참고), 가볍게 유지해야 함.
 - 이 repository는 application source, Dockerfile, CI를 소유하고, `cleanbrain-me-infra`는 production Kubernetes manifest를 소유합니다 — 둘은 서로의 내용을 중복해서는 안 됩니다.
 - CI 배포 identity(`cleanbrain-me-entrance` namespace의 `ci-deployer`)는 `english-core-speaking`과 같은 least-privilege model을 따릅니다 — 확장된 공유 identity가 아니라 별도의 RBAC identity입니다.
-- GitHub Spec Kit CLI(`specify-cli==1.0.8`, `PROJECT.yaml`의 `standards.spec_kit.pinned_version`에 pinned됨)는 이 repository에서 실제로 설치되거나 실행되지 않았습니다. 이 세션에는 동작하는 Python/`uv`/`pip` toolchain이 없었고(작동하지 않는 Windows Store stub `python.exe`만 있었음), 그래서 `.specify/memory/constitution.md`는 `specify init`으로 생성된 것이 아니라 `.ai/constitution/engineering-principles.md`의 내용으로부터 손으로 작성되었습니다. `.specify/` template/script나 실제 `.claude/skills/speckit-*`/`.agents/skills/speckit-*` 파일은 아직 존재하지 않습니다. 이것은 흉내 낼 대상이 아니라 실제로 알려진 gap입니다(`agent-dev-starter`의 `ADR-0010`) — "Next" 참고.
+- (2026-09-20 해소됨) GitHub Spec Kit CLI(`specify-cli==1.0.8`, `PROJECT.yaml`의 `standards.spec_kit.pinned_version`에 pinned됨)는 이제 이 repository에서 실제로 설치되어 실행되었습니다 — 실제 `.specify/templates/`, `.specify/scripts/`, `.specify/workflows/`, `.claude/skills/speckit-*/SKILL.md`, `.agents/skills/speckit-*/SKILL.md`가 `specify init`/`specify integration install codex`로 생성되어 존재하며, 손으로 작성된 것이 아닙니다. `.specify/memory/constitution.md`(이전 migration에서 손으로 작성됨)는 install로 인해 변경되지 않았음을 확인했습니다.
 
 ## Exit criteria for this phase
 

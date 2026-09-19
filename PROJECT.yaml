@@ -43,7 +43,7 @@ current_phase:
 standards:
   agents_md: AGENTS.md
   spec_kit:
-    pinned_version: specify-cli==1.0.8   # agent-dev-starter's pin; CLI not yet installed here, see current-state.md
+    pinned_version: specify-cli==1.0.8   # agent-dev-starter's pin; installed and run here, see current-state.md
     memory: .specify/memory/
   skills:
     claude_code: .claude/skills/
