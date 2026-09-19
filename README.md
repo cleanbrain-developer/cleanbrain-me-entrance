@@ -9,7 +9,7 @@ Project context (purpose, architecture, current status) lives in the repository 
 - [`docs/architecture/`](docs/architecture/) — structure and boundaries
 - [`docs/decisions/`](docs/decisions/) — accepted architecture decisions
 - [`docs/status/current-state.md`](docs/status/current-state.md) — current progress and next work
-- [`CLAUDE.md`](CLAUDE.md) / [`AGENTS.md`](AGENTS.md) — agent bootstrap entry points
+- [`AGENTS.md`](AGENTS.md) — agent bootstrap entry point
 
 ## Stack
 

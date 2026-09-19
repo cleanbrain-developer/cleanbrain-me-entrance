@@ -10,13 +10,14 @@
 
 ## Single responsibility
 
-- 프로젝트 identity와 구조화된 phase: `PROJECT.yaml`
+- 프로젝트 identity, 구조화된 phase, pinned standard version: `PROJECT.yaml`
+- 유일한 agent entry point와 behavioral contract: `AGENTS.md`
+- durable한 engineering 원칙: `.specify/memory/constitution.md`
+- 문서 소유권과 language policy: `.ai/constitution/documentation-policy.md` — 어떤 open standard도 소유하지 않는 유일한 정책 영역
 - 제품 목적, goals, scope: `docs/product/`
 - 구조와 context model: `docs/architecture/`
 - 중요한 decision과 근거: `docs/decisions/`
 - 현재 진행 상황, 다음 작업, open decision: `docs/status/current-state.md`
-- durable한 development 원칙: `.ai/constitution/`
-- 도구별 bootstrap 차이: `AGENTS.md` / `CLAUDE.md`
 
 같은 정책을 여러 파일에 중복하지 마세요. 요약이 유용한 경우, authoritative한 경로로 링크하세요.
 

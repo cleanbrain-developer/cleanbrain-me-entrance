@@ -8,13 +8,14 @@ Conversations and external links may be discovery or bootstrap inputs, but they 
 
 ## Single responsibility
 
-- Project identity and structured phase: `PROJECT.yaml`
+- Project identity, structured phase, and pinned standard versions: `PROJECT.yaml`
+- The sole agent entry point and behavioral contract: `AGENTS.md`
+- Durable engineering principles: `.specify/memory/constitution.md`
+- Document ownership and language policy: `.ai/constitution/documentation-policy.md` — the one policy area no open standard owns
 - Product purpose, goals, and scope: `docs/product/`
 - Structure and context model: `docs/architecture/`
 - Significant decisions and rationale: `docs/decisions/`
 - Current progress, next work, and open decisions: `docs/status/current-state.md`
-- Durable development principles: `.ai/constitution/`
-- Tool-specific bootstrap differences: `AGENTS.md` / `CLAUDE.md`
 
 Do not duplicate the same policy across files. When a summary is useful, link to the authoritative path.
 

@@ -2,7 +2,7 @@
 
 # Current State
 
-Last updated: 2026-09-17
+Last updated: 2026-09-20
 
 ## Current phase
 
@@ -39,6 +39,16 @@ Deployed, CI-driven — `https://cleanbrain.me`는 production에서 live 상태�
 - 위에서 보류되었던 항목에 대한 maintainer의 decision에 따라 header에 수동 KO/EN toggle을 추가함. `locale`은 plain constant 대신 `ref<Locale>`이 되었으며, 저장된 선택(`loadStoredLocale()`)에서 seed되고 없으면 `detectLocale()`로 fallback하므로 첫 방문자에 대한 기본 동작(한국에서는 한국어, 그 외에는 영어)은 변하지 않음. KO/EN을 클릭하면 `setLocale()`이 호출되어 ref를 업데이트하고(하위 모든 것은 기존 `:locale` prop chain을 통해 반응함) `storeLocale()`을 통해 선택을 `localStorage`에 영속화하여 다음 방문 시 기억되도록 함 — storage access가 throw할 수 있으므로 방어적으로 wrapping됨. Playwright(임시, 프로젝트 dependency 아님)로 검증함: `ko-KR` 방문자는 기본적으로 한국어이며, EN으로 toggle하면 DOM(`lang`, subtitle, card action text)이 즉시 업데이트되고 페이지 reload 후에도 유지됨; `en-US` 방문자는 기본적으로 영어이며 KO로 다시 toggle할 수 있음; axe-core는 toggle된 상태에서 violation 0건을 보였음.
 - `agent-dev-starter`의 ADR-0004/ADR-0005 decision(bilingual documentation, mandatory and cascading)에 따라 이 repository의 모든 Markdown 문서에 대해 `.ko.md` Korean companion을 추가함(2026-09-17). 그 decision에 따라 `PROJECT.yaml`은 제외됨. 영어는 계속 canonical이며, agent bootstrap은 계속 영어 파일만 읽음.
 - `agent-dev-starter`에서 `scripts/check-ko-companions.sh`를 복사하고, `.github/workflows/deploy.yml`의 `test` job에 `--missing-only`로 실행해서 `.ko.md` companion이 누락되면 build를 실패시키는 step을 추가함, `agent-dev-starter`의 `ADR-0009`에 따름(2026-09-18).
+- `agent-dev-starter`의 open standard 기반 V2 migration(`agent-dev-starter`의 `ADR-0010`부터 `ADR-0013`)을 retrofit함(2026-09-20):
+  - `CLAUDE.md`/`CLAUDE.ko.md`를 제거함. Claude Code가 `AGENTS.md`를 네이티브로 읽으므로(v2.1.277) 두 개의 adapter를 동기화해야 할 이유가 더 이상 없어, 이제 `AGENTS.md`가 유일한 agent adapter임(`ADR-0011`).
+  - `.ai/constitution/agent-behavior.md`/`.ko.md`를 `AGENTS.md`에 직접 병합하고 제거함.
+  - `.ai/constitution/engineering-principles.md`/`.ko.md`를 새로운 `.specify/memory/constitution.md`/`.ko.md`(GitHub Spec Kit 자체의 constitution 역할)로 병합하고 제거함. 이 프로젝트 고유의 "Config over code for service metadata"와 "Separated boundaries" 원칙도 포함됨(`ADR-0013`). `.ai/constitution/documentation-policy.md`는 역할상 영향받지 않았고, "Single responsibility" 목록만 새 파일 위치를 가리키도록 업데이트됨.
+  - `PROJECT.yaml`: map 형태의 `agent_entrypoints`를 단일 `agent_entrypoint: AGENTS.md`로 대체함; `standards:` block(`agents_md`, `spec_kit.pinned_version: specify-cli==1.0.8`, `spec_kit.memory`, `skills` 경로)을 추가함; `context.constitution`을 `context.specify_constitution`과 `context.documentation_policy`로 대체함.
+  - `docs/architecture/{repository-structure,agent-context-model}.md`를 새로운 형태(단일 adapter, `.specify/memory/constitution.md`, 활성화된 Spec Kit feature가 없으므로 아직 없는 `specs/<NNN-feature>/`)로 업데이트함. `docs/architecture/overview.md`는 ADS convention 관련 내용이 전혀 없어 변경이 필요 없었음 — product/architecture 사실만 담고 있음.
+  - 이 프로젝트에는 `.ai/skills/` 디렉토리가 없어서, `ADR-0012`의 디렉토리 이동 대상이 없었음.
+  - `README.md`와 `docs/product/goals.md`(그리고 그 `.ko.md` companion)에 남아 있던 오래된 `CLAUDE.md` 참조를 수정함.
+  - 수정된 모든 문서의 `.ko.md` companion을 같은 변경 안에서 업데이트함; `scripts/check-ko-companions.sh --missing-only`는 깨끗하게 통과함(누락 0건).
+  - 의도적으로 하지 않은 것: 실제로 `specify init`을 실행하거나 pinned Spec Kit CLI(`specify-cli==1.0.8`)를 설치하는 것 — 아래 "Known constraints" 참고.
 
 ## In progress
 
@@ -47,6 +57,7 @@ Deployed, CI-driven — `https://cleanbrain.me`는 production에서 live 상태�
 ## Next
 
 1. 여기서부터는 일반적인 feature/content 작업 — 남아 있는 foundation이나 배포 파이프라인 gap은 없음.
+2. 이 환경에서 동작하는 Python/`uv`/`pipx` toolchain이 확보되면, 실제 pinned Spec Kit CLI(`uv tool install specify-cli==1.0.8`, 이후 `specify init --here --integration claude --integration codex`)를 실행하여 `.specify/`의 template/script와 실제 `.claude/skills/speckit-*/SKILL.md` / `.agents/skills/speckit-*/SKILL.md` 파일을 생성함 — `agent-dev-starter`의 `ADR-0010`에 따라 손으로 작성하지 않음. 이 migration을 위해 손으로 작성한 `.specify/memory/constitution.md`는 `specify init`이 그 자리에 생성하는 내용과 조율되어야 함.
 
 ## Open decisions
 
@@ -61,6 +72,7 @@ Deployed, CI-driven — `https://cleanbrain.me`는 production에서 live 상태�
 - Target cluster는 2 vCPU / 4 GB RAM / 40 GB disk(`cleanbrain-me-infra` 기준)입니다 — 모든 service를 합친 CPU limit이 이제 박스의 vCPU 수를 초과하므로(reservation이 아니라 ceiling — 해당 repository의 "Resource budget" 참고), 가볍게 유지해야 함.
 - 이 repository는 application source, Dockerfile, CI를 소유하고, `cleanbrain-me-infra`는 production Kubernetes manifest를 소유합니다 — 둘은 서로의 내용을 중복해서는 안 됩니다.
 - CI 배포 identity(`cleanbrain-me-entrance` namespace의 `ci-deployer`)는 `english-core-speaking`과 같은 least-privilege model을 따릅니다 — 확장된 공유 identity가 아니라 별도의 RBAC identity입니다.
+- GitHub Spec Kit CLI(`specify-cli==1.0.8`, `PROJECT.yaml`의 `standards.spec_kit.pinned_version`에 pinned됨)는 이 repository에서 실제로 설치되거나 실행되지 않았습니다. 이 세션에는 동작하는 Python/`uv`/`pip` toolchain이 없었고(작동하지 않는 Windows Store stub `python.exe`만 있었음), 그래서 `.specify/memory/constitution.md`는 `specify init`으로 생성된 것이 아니라 `.ai/constitution/engineering-principles.md`의 내용으로부터 손으로 작성되었습니다. `.specify/` template/script나 실제 `.claude/skills/speckit-*`/`.agents/skills/speckit-*` 파일은 아직 존재하지 않습니다. 이것은 흉내 낼 대상이 아니라 실제로 알려진 gap입니다(`agent-dev-starter`의 `ADR-0010`) — "Next" 참고.
 
 ## Exit criteria for this phase
 

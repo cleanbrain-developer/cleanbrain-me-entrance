@@ -1,8 +1,8 @@
-> 이 문서는 [`engineering-principles.md`](engineering-principles.md)의 한국어 번역본입니다. 영어 원본이 canonical이며, 충돌 시 영어 원본이 우선합니다.
+> 이 문서는 [`constitution.md`](constitution.md)의 한국어 번역본입니다. 영어 원본이 canonical이며, 충돌 시 영어 원본이 우선합니다.
 
-# Engineering Principles
+# Constitution
 
-이 문서는 이 repository에서 기술 선택이나 개별 feature보다 오래 지속되어야 할 engineering 원칙을 정의합니다.
+이것은 GitHub Spec Kit이 사용하는 의미에서의 이 프로젝트의 constitution입니다: 이 repository의 모든 변경이 평가되는 durable한 원칙입니다. 기존 `.ai/constitution/engineering-principles.md`를 대체하며, 이제 이 원칙들이 사는 유일한 곳입니다.
 
 ## Evidence before change
 
@@ -20,10 +20,18 @@ architectural boundary나 convention을 조용히 바꾸지 않습니다. 장기
 
 검증 가능한 결과물을 만듭니다. build와 typecheck가 존재하면 실행하고, 그렇지 않다면 검증 방법과 그 한계를 명시합니다. 판단이 필요한 guidance와 code, test, linter, CI로 강제되어야 하는 규칙을 구분합니다.
 
-## Config over code for service metadata
+## Agent-agnostic core
+
+product intent, architecture, decision, 이 원칙들을 agent-specific instruction file에 묶어두지 않습니다. `AGENTS.md`는 모든 agent가 이 공유 source를 찾고 따르는 데 필요한 routing과 behavioral contract만을 담을 수 있습니다.
+
+## Project-specific principles
+
+프로젝트는 이 줄 아래에 자신만의 원칙을 추가할 수 있으며, 각각은 여기에 실제 prose 정의를 가져야 합니다 — `PROJECT.yaml`에만 있는 bare name은 허용되지 않습니다. 이 프로젝트는 두 가지를 추가했습니다.
+
+### Config over code for service metadata
 
 Service identity, description, status, URL은 UI 컴포넌트가 아니라 단일 config source에 있어야 합니다. 서비스를 추가하거나 업데이트하는 것이 presentation 컴포넌트를 건드리는 것을 요구해서는 안 됩니다.
 
-## Separated boundaries
+### Separated boundaries
 
 domain concern(service metadata, presentation)을 external system이나 tooling(build tool, container runtime, Kubernetes 배포)과 분리합니다. 배포와 infrastructure 관련 사항은 이 repository의 source tree가 아니라 `cleanbrain-me-infra` repository에 속합니다.

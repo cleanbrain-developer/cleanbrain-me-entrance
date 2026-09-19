@@ -22,6 +22,7 @@ supported_agents:
     - codex
     - claude-code
   policy: agent-agnostic-core
+  entrypoint: AGENTS.md   # sole adapter for every supported agent
 
 principles:
   - repository-first-context
@@ -39,12 +40,20 @@ current_phase:
     verified end to end. No remaining foundation or deployment gaps;
     ordinary feature/content work from here.
 
+standards:
+  agents_md: AGENTS.md
+  spec_kit:
+    pinned_version: specify-cli==1.0.8   # agent-dev-starter's pin; CLI not yet installed here, see current-state.md
+    memory: .specify/memory/
+  skills:
+    claude_code: .claude/skills/
+    codex: .agents/skills/
+
 context:
   human_entrypoint: README.md
-  agent_entrypoints:
-    codex: AGENTS.md
-    claude_code: CLAUDE.md
-  constitution: .ai/constitution/
+  agent_entrypoint: AGENTS.md
+  specify_constitution: .specify/memory/constitution.md
+  documentation_policy: .ai/constitution/documentation-policy.md
   product: docs/product/
   architecture: docs/architecture/
   decisions: docs/decisions/

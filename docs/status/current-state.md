@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-09-13
+Last updated: 2026-09-20
 
 ## Current phase
 
@@ -37,6 +37,16 @@ Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a nor
 - Added a manual KO/EN toggle in the header, per the maintainer's decision on the deferred item above. `locale` became a `ref<Locale>` instead of a plain constant, seeded from a stored choice (`loadStoredLocale()`) falling back to `detectLocale()`, so the default behavior (Korean in Korea, English elsewhere) is unchanged for a first-time visitor. Clicking KO/EN calls `setLocale()`, which updates the ref (everything downstream reacts through the existing `:locale` prop chain) and persists the choice to `localStorage` via `storeLocale()` so it's remembered on the next visit — wrapped defensively since storage access can throw. Verified with Playwright (temporary, not a project dependency): a `ko-KR` visitor defaults to Korean, toggling to EN updates the DOM immediately (`lang`, subtitle, card action text) and survives a page reload; an `en-US` visitor defaults to English and can toggle back to KO; axe-core showed 0 violations on the toggled state.
 - Added a `.ko.md` Korean companion for every Markdown document in this repository (2026-09-17), per the maintainer's ADR-0004/ADR-0005 decision in `agent-dev-starter` (bilingual documentation, mandatory and cascading). `PROJECT.yaml` is excluded per that decision. English remains canonical; agent bootstrap continues to read only the English files.
 - Copied `scripts/check-ko-companions.sh` from `agent-dev-starter` and added a step to `.github/workflows/deploy.yml`'s `test` job that runs it with `--missing-only` and fails the build on a missing `.ko.md` companion, per `agent-dev-starter`'s `ADR-0009` (2026-09-18).
+- Retrofitted `agent-dev-starter`'s V2 migration onto open standards (`ADR-0010` through `ADR-0013` in `agent-dev-starter`), 2026-09-20:
+  - `CLAUDE.md`/`CLAUDE.ko.md` removed. `AGENTS.md` is now the sole agent adapter, since Claude Code reads `AGENTS.md` natively (v2.1.277) and there was no remaining reason to keep two adapters in sync (`ADR-0011`).
+  - `.ai/constitution/agent-behavior.md`/`.ko.md` merged directly into `AGENTS.md` and removed.
+  - `.ai/constitution/engineering-principles.md`/`.ko.md` merged into a new `.specify/memory/constitution.md`/`.ko.md` (GitHub Spec Kit's own constitution role) and removed, including this project's own "Config over code for service metadata" and "Separated boundaries" principles (`ADR-0013`). `.ai/constitution/documentation-policy.md` is unaffected in role, only its "Single responsibility" list was updated to point at the new file locations.
+  - `PROJECT.yaml`: `agent_entrypoints` (map) replaced with a single `agent_entrypoint: AGENTS.md`; added a `standards:` block (`agents_md`, `spec_kit.pinned_version: specify-cli==1.0.8`, `spec_kit.memory`, `skills` paths); `context.constitution` replaced with `context.specify_constitution` and `context.documentation_policy`.
+  - `docs/architecture/{repository-structure,agent-context-model}.md` updated to the new shape (single adapter, `.specify/memory/constitution.md`, no `specs/<NNN-feature>/` yet since no Spec Kit feature is active). `docs/architecture/overview.md` needed no change — it has no ADS-convention references, only product/architecture facts.
+  - This project has no `.ai/skills/` directory, so `ADR-0012`'s directory move had nothing to migrate.
+  - Fixed stale `CLAUDE.md` references in `README.md` and `docs/product/goals.md` (and their `.ko.md` companions).
+  - Every touched document's `.ko.md` companion was updated in the same change; `scripts/check-ko-companions.sh --missing-only` passes clean (0 missing).
+  - Deliberately not done: actually running `specify init` / installing the pinned Spec Kit CLI (`specify-cli==1.0.8`) — see "Known constraints" below.
 
 ## In progress
 
@@ -45,6 +55,7 @@ Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a nor
 ## Next
 
 1. Ordinary feature/content work from here — no remaining foundation or deployment-pipeline gaps.
+2. Run the real, pinned Spec Kit CLI (`uv tool install specify-cli==1.0.8`, then `specify init --here --integration claude --integration codex`) once a working Python/`uv`/`pipx` toolchain is available in this environment, to actually generate `.specify/`'s templates/scripts and the real `.claude/skills/speckit-*/SKILL.md` / `.agents/skills/speckit-*/SKILL.md` files — not hand-written, per `agent-dev-starter`'s `ADR-0010`. `.specify/memory/constitution.md` was hand-drafted for this migration and should be reconciled with whatever `specify init` generates there.
 
 ## Open decisions
 
@@ -59,6 +70,7 @@ Deployed, CI-driven — `https://cleanbrain.me` is live in production, and a nor
 - Target cluster is 2 vCPU / 4 GB RAM / 40 GB disk (per `cleanbrain-me-infra`) — the combined CPU limit across all services now exceeds the box's vCPU count (ceiling, not reservation — see that repo's "Resource budget"), so stay lightweight.
 - This repository owns application source, Dockerfile, and CI; `cleanbrain-me-infra` owns the production Kubernetes manifest — the two must not duplicate each other's content.
 - The CI deployment identity (`ci-deployer` in `cleanbrain-me-entrance` namespace) follows the same least-privilege model as `english-core-speaking`'s — a separate RBAC identity, not a widened shared one.
+- The GitHub Spec Kit CLI (`specify-cli==1.0.8`, pinned in `PROJECT.yaml`'s `standards.spec_kit.pinned_version`) has not actually been installed or run in this repository. This session had no working Python/`uv`/`pip` toolchain (only a non-functional Windows Store stub `python.exe`), so `.specify/memory/constitution.md` was hand-drafted from `.ai/constitution/engineering-principles.md`'s content rather than generated by `specify init`, and no `.specify/` templates/scripts or real `.claude/skills/speckit-*`/`.agents/skills/speckit-*` files exist yet. This is a real, known gap, not something to fake around (`agent-dev-starter`'s `ADR-0010`) — see "Next".
 
 ## Exit criteria for this phase
 

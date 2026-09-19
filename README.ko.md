@@ -11,7 +11,7 @@
 - [`docs/architecture/`](docs/architecture/) — 구조와 경계
 - [`docs/decisions/`](docs/decisions/) — 승인된 architecture decision
 - [`docs/status/current-state.md`](docs/status/current-state.md) — 현재 진행 상황과 다음 작업
-- [`CLAUDE.md`](CLAUDE.md) / [`AGENTS.md`](AGENTS.md) — agent bootstrap entry point
+- [`AGENTS.md`](AGENTS.md) — agent bootstrap entry point
 
 ## Stack
 
